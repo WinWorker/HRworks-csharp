@@ -97,6 +97,34 @@ namespace HRworksConnector
             System.Net.Http.HttpContent requestContent = httpResponseMessage.Content;
             string resultContent = requestContent.ReadAsStringAsync().Result;
 
+#if DEBUG
+            try
+            {
+                string tempDirectory = System.IO.Path.GetTempPath();
+                string targetFilename = string.Format("hrworks-dbg-{0}.json", target);
+                string tempFilepath = System.IO.Path.Combine(tempDirectory, targetFilename);
+
+                string tmpContent = resultContent;
+
+                try
+                {
+                    Newtonsoft.Json.Linq.JObject jsonResult = Newtonsoft.Json.Linq.JObject.Parse(tmpContent);
+                    tmpContent = jsonResult.ToString(Newtonsoft.Json.Formatting.Indented);
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine(ex.Message);
+                }
+
+
+                System.IO.File.WriteAllText(tempFilepath, tmpContent);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+#endif
+
             System.Threading.Tasks.Task<T> typedResponse = System.Threading.Tasks.Task.Factory.StartNew(() => Newtonsoft.Json.JsonConvert.DeserializeObject<T>(resultContent));
             return await typedResponse;
         }

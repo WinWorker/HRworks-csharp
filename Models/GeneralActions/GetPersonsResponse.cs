@@ -23,6 +23,25 @@ namespace HRworksConnector.Models.GeneralActions
         {
             return string.Format("{0} Organization Persons", this.OrganizationsPersons.Sum(op => op.Persons.Count));
         }
+
+        /// <summary>
+        /// Gibt alle Personen als platte Liste zurück.
+        /// </summary>
+        /// <returns></returns>
+        public HRworksConnector.Models.GeneralActions.PersonBaseData[] ToPersonArray()
+        {
+            System.Collections.Generic.List<HRworksConnector.Models.GeneralActions.PersonBaseData> persons = new System.Collections.Generic.List<HRworksConnector.Models.GeneralActions.PersonBaseData>();
+
+            foreach (HRworksConnector.Models.GeneralActions.OrganizationPersons organizationPersons in this.OrganizationsPersons)
+            {
+                foreach (HRworksConnector.Models.GeneralActions.PersonBaseData personBaseData in organizationPersons.Persons)
+                {
+                    persons.Add(personBaseData);
+                }
+            }
+
+            return persons.ToArray();
+        }
     }
 
     public class OrganizationPersons
