@@ -67,9 +67,16 @@
     <Compile Include="Models\AbsenceActions\GetAbsencesResponse.cs" />
     <Compile Include="Models\AbsenceActions\GetAbsencesRequest.cs" />
     <Compile Include="Models\AbsenceActions\GetAllAbsenceTypesResponse.cs" />
+    <Compile Include="Models\EmployeeActions\Address.cs" />
+    <Compile Include="Models\EmployeeActions\BankAccount.cs" />
+    <Compile Include="Models\EmployeeActions\Cost.cs" />
     <Compile Include="Models\EmployeeActions\GetPersonMasterDataRequest.cs" />
     <Compile Include="Models\EmployeeActions\GetPersonMasterDataResponse.cs" />
+    <Compile Include="Models\EmployeeActions\PermanentEstablishment.cs" />
     <Compile Include="Models\EmployeeActions\Person.cs" />
+    <Compile Include="Models\EmployeeActions\Superior.cs" />
+    <Compile Include="Models\EmployeeActions\WorkingDay.cs" />
+    <Compile Include="Models\EmployeeActions\WorkSchedule.cs" />
     <Compile Include="Models\GeneralActions\OrganizationUnit.cs" />
     <Compile Include="Models\GeneralActions\GetPersonsResponse.cs" />
     <Compile Include="Models\GeneralActions\OrganizationUnitsResponse.cs" />
