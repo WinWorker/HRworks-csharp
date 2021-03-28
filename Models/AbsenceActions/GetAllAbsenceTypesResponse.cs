@@ -41,6 +41,11 @@ namespace HRworksConnector.Models.AbsenceActions
                 {
                     activeKrankAndUrlaubKeys.Add(absenceType.Key);
                 }
+
+                if (string.Compare(absenceType.Key, "UU", StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    activeKrankAndUrlaubKeys.Add(absenceType.Key);
+                }
             }
 
             return activeKrankAndUrlaubKeys.ToArray();

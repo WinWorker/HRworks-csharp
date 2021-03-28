@@ -39,6 +39,14 @@ namespace HRworksConnector.Actions
         /// <param name="year"></param>
         /// <returns></returns>
         // System.Threading.Tasks.Task<string> GetHolidays(int year);
+
+        /// <summary>
+        /// Returns the cumulated available working hours of the specified persons in the date interval
+        /// specified by the beginDate and endDate parameters.The selected date interval can be further
+        /// divided into days, weeks or months.
+        /// </summary>
+        /// <returns>A collection of (sub) date intervals for each person identifier that includes the cumulated working hours value for the respective date interval.</returns>
+        System.Threading.Tasks.Task<HRworksConnector.Models.GeneralActions.GetAvailableWorkingHoursResponse> GetAvailableWorkingHoursAsync(HRworksConnector.Models.GeneralActions.GetAvailableWorkingHoursRequest getAvailableWorkingHoursRequest);
     }
 
     public class GenaralActions : HRworksConnector.Base, IGeneralActions
@@ -111,6 +119,21 @@ namespace HRworksConnector.Actions
 
         //    return await PostAsync<string>(Target, json);
         //}
+
+        /// <summary>
+        /// Returns the cumulated available working hours of the specified persons in the date interval
+        /// specified by the beginDate and endDate parameters.The selected date interval can be further
+        /// divided into days, weeks or months.
+        /// </summary>
+        /// <returns>A collection of (sub) date intervals for each person identifier that includes the cumulated working hours value for the respective date interval.</returns>
+        public async System.Threading.Tasks.Task<HRworksConnector.Models.GeneralActions.GetAvailableWorkingHoursResponse> GetAvailableWorkingHoursAsync(HRworksConnector.Models.GeneralActions.GetAvailableWorkingHoursRequest getAvailableWorkingHoursRequest)
+        {
+            const string Target = @"GetAvailableWorkingHours";
+
+            Newtonsoft.Json.Linq.JObject json = Newtonsoft.Json.Linq.JObject.FromObject(getAvailableWorkingHoursRequest);
+
+            return await PostAsync<HRworksConnector.Models.GeneralActions.GetAvailableWorkingHoursResponse>(Target, json);
+        }
 
         #endregion
     }

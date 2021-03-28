@@ -54,10 +54,37 @@ namespace HRworksConnector
 
                 #endregion
 
-                #region Target GetAbsences
+                #region GetAvailableWorkingHours
 
-                System.DateTime dateFrom = System.DateTime.Now.AddDays(-60);
-                System.DateTime dateTo = System.DateTime.Now;
+                System.DateTime today = System.DateTime.Now.Date;
+
+                System.DateTime dateFrom = today.Date.AddDays(-60);
+                System.DateTime dateTo = today.AddDays(60);
+
+                HRworksConnector.Models.GeneralActions.GetAvailableWorkingHoursRequest getAvailableWorkingHoursRequest = new HRworksConnector.Models.GeneralActions.GetAvailableWorkingHoursRequest();
+                getAvailableWorkingHoursRequest.BeginDate = dateFrom;
+                getAvailableWorkingHoursRequest.EndDate = dateTo;
+
+                int counter = 0;
+
+                HRworksConnector.Models.GeneralActions.PersonBaseData[] personsAsArray = persons.ToPersonArray();
+
+                foreach (HRworksConnector.Models.GeneralActions.PersonBaseData personBaseData in personsAsArray)
+                {
+                    counter++;
+                    getAvailableWorkingHoursRequest.PersonnelNumbers.Add(personBaseData.PersonnelNumber);
+
+                    if (counter > 30)
+                    {
+                        break;
+                    }
+                }
+
+                HRworksConnector.Models.GeneralActions.GetAvailableWorkingHoursResponse getAvailableWorkingHoursResponse = await hrworksApi.GeneralActions.GetAvailableWorkingHoursAsync(getAvailableWorkingHoursRequest);
+
+                #endregion
+
+                #region Target GetAbsences
 
                 string[] activeKrankAndUrlaubKeys = getAllAbsenceTypesResponse.GetActiveKrankAndUrlaubKeys();
 

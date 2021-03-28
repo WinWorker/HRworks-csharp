@@ -92,6 +92,12 @@ namespace HRworksConnector.Models.GeneralActions
 
         public override void WriteJson(Newtonsoft.Json.JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
         {
+            serializer.Serialize(writer, value);
+        }
+
+        /*
+        public override void WriteJson(Newtonsoft.Json.JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
+        {
             GetPersonsResponse getPersonsResponse = (GetPersonsResponse)value;
 
             Newtonsoft.Json.Linq.JArray organizationsPersons = new Newtonsoft.Json.Linq.JArray();
@@ -112,5 +118,6 @@ namespace HRworksConnector.Models.GeneralActions
 
             organizationsPersons.WriteTo(writer);
         }
+        */
     }
 }
