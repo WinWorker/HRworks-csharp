@@ -9,9 +9,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("WinWorker GmbH")]
-[assembly: AssemblyProduct("WinWorker - Software für's Handwerk")]
+[assembly: AssemblyProduct("WinWorker - Software fÃ¼r's Handwerk")]
 [assembly: AssemblyCopyright("Copyright (C) 1993-2021 WinWorker GmbH. Alle Rechte vorbehalten")]
-[assembly: AssemblyTrademark("WinWorker® ist ein eingetragenes Warenzeichen der 'WinWorker GmbH'")]
+[assembly: AssemblyTrademark("WinWorkerÂ® ist ein eingetragenes Warenzeichen der 'WinWorker GmbH'")]
 [assembly: AssemblyCulture("")]
 
 // Durch Festlegen von ComVisible auf FALSE werden die Typen in dieser Assembly
