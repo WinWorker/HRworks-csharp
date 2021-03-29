@@ -14,5 +14,4 @@ namespace HRworksConnector.Models.EmployeeActions
         [Newtonsoft.Json.JsonProperty("day")]
         public string Day { get; set; }
     }
-
 }
