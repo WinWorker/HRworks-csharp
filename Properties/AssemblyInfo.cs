@@ -2,8 +2,8 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-// Allgemeine Informationen über eine Assembly werden über die folgenden
-// Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
+// Allgemeine Informationen Ã¼ber eine Assembly werden Ã¼ber die folgenden
+// Attribute gesteuert. Ã„ndern Sie diese Attributwerte, um die Informationen zu Ã¤ndern,
 // die einer Assembly zugeordnet sind.
 [assembly: AssemblyTitle("WinWorker Komponente")]
 [assembly: AssemblyDescription("")]
@@ -15,22 +15,22 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 
 // Durch Festlegen von ComVisible auf FALSE werden die Typen in dieser Assembly
-// für COM-Komponenten unsichtbar.  Wenn Sie auf einen Typ in dieser Assembly von
-// COM aus zugreifen müssen, sollten Sie das ComVisible-Attribut für diesen Typ auf "True" festlegen.
+// fÃ¼r COM-Komponenten unsichtbar.  Wenn Sie auf einen Typ in dieser Assembly von
+// COM aus zugreifen mÃ¼ssen, sollten Sie das ComVisible-Attribut fÃ¼r diesen Typ auf "True" festlegen.
 [assembly: ComVisible(false)]
 
-// Die folgende GUID bestimmt die ID der Typbibliothek, wenn dieses Projekt für COM verfügbar gemacht wird
+// Die folgende GUID bestimmt die ID der Typbibliothek, wenn dieses Projekt fÃ¼r COM verfÃ¼gbar gemacht wird
 [assembly: Guid("a5146e59-60db-42a1-843b-7a33a286f029")]
 
-// Versionsinformationen für eine Assembly bestehen aus den folgenden vier Werten:
+// Versionsinformationen fÃ¼r eine Assembly bestehen aus den folgenden vier Werten:
 //
 //      Hauptversion
 //      Nebenversion
 //      Buildnummer
 //      Revision
 //
-// Sie können alle Werte angeben oder Standardwerte für die Build- und Revisionsnummern verwenden,
-// übernehmen, indem Sie "*" eingeben:
+// Sie kÃ¶nnen alle Werte angeben oder Standardwerte fÃ¼r die Build- und Revisionsnummern verwenden,
+// Ã¼bernehmen, indem Sie "*" eingeben:
 // In CommonAssemblyInfo: [assembly: AssemblyVersion("xx.xx.xx.xx")]
 // In CommonAssemblyInfo: [assembly: AssemblyVersion("xx.xx.xx.xx")]
 // In CommonAssemblyInfo: [assembly: AssemblyFileVersion("xx.xx.xx.xx")]
