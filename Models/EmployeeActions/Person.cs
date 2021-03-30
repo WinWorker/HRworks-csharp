@@ -38,8 +38,8 @@ namespace HRworksConnector.Models.EmployeeActions
         [Newtonsoft.Json.JsonProperty("bankAccount")]
         public BankAccount BankAccount { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("Kürzel")]
-        public string Kürzel { get; set; }
+        [Newtonsoft.Json.JsonProperty("KÃ¼rzel")]
+        public string KÃ¼rzel { get; set; }
 
         [Newtonsoft.Json.JsonProperty("buildingOrRoom")]
         public string BuildingOrRoom { get; set; }
@@ -53,8 +53,8 @@ namespace HRworksConnector.Models.EmployeeActions
         [Newtonsoft.Json.JsonProperty("permanentEstablishment")]
         public PermanentEstablishment PermanentEstablishment { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("Arbeitsverhältnis weitere")]
-        public string ArbeitsverhältnisWeitere { get; set; }
+        [Newtonsoft.Json.JsonProperty("ArbeitsverhÃ¤ltnis weitere")]
+        public string ArbeitsverhÃ¤ltnisWeitere { get; set; }
 
         [Newtonsoft.Json.JsonProperty("address")]
         public Address Address { get; set; }
