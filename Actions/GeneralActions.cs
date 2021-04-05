@@ -38,7 +38,7 @@ namespace HRworksConnector.Actions
         /// </summary>
         /// <param name="year"></param>
         /// <returns></returns>
-        // System.Threading.Tasks.Task<string> GetHolidays(int year);
+        System.Threading.Tasks.Task<HRworksConnector.Models.GeneralActions.HolidaysResponse> GetHolidaysAsync(int year);
 
         /// <summary>
         /// Returns the cumulated available working hours of the specified persons in the date interval
@@ -106,19 +106,19 @@ namespace HRworksConnector.Actions
         /// </summary>
         /// <param name="year"></param>
         /// <returns></returns>
-        //public async System.Threading.Tasks.Task<string> GetHolidays(int year)
-        //{
-        //    const string Target = @"GetHolidays";
+        public async System.Threading.Tasks.Task<HRworksConnector.Models.GeneralActions.HolidaysResponse> GetHolidaysAsync(int year)
+        {
+            const string Target = @"GetHolidays";
 
-        //    Newtonsoft.Json.Linq.JObject json = new Newtonsoft.Json.Linq.JObject();
-        //    json["year"] = year;
+            Newtonsoft.Json.Linq.JObject json = new Newtonsoft.Json.Linq.JObject();
+            json["year"] = year;
 
-        //    Newtonsoft.Json.Linq.JArray countryCodesAsJson = new Newtonsoft.Json.Linq.JArray();
-        //    countryCodesAsJson.Add("DEU");
-        //    json["countryCodes"] = countryCodesAsJson;
+            Newtonsoft.Json.Linq.JArray countryCodesAsJson = new Newtonsoft.Json.Linq.JArray();
+            countryCodesAsJson.Add("DEU");
+            json["countryCodes"] = countryCodesAsJson;
 
-        //    return await PostAsync<string>(Target, json);
-        //}
+            return await PostAsync<HRworksConnector.Models.GeneralActions.HolidaysResponse>(Target, json);
+        }
 
         /// <summary>
         /// Returns the cumulated available working hours of the specified persons in the date interval

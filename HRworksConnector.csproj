@@ -79,6 +79,9 @@
     <Compile Include="Models\EmployeeActions\WorkSchedule.cs" />
     <Compile Include="Models\GeneralActions\GetAvailableWorkingHoursRequest.cs" />
     <Compile Include="Models\GeneralActions\GetAvailableWorkingHoursResponse.cs" />
+    <Compile Include="Models\GeneralActions\Holiday.cs" />
+    <Compile Include="Models\GeneralActions\HolidaysResponse.cs" />
+    <Compile Include="Models\GeneralActions\Holidays.cs" />
     <Compile Include="Models\GeneralActions\OrganizationUnit.cs" />
     <Compile Include="Models\GeneralActions\GetPersonsResponse.cs" />
     <Compile Include="Models\GeneralActions\OrganizationUnitsResponse.cs" />
