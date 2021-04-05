@@ -105,7 +105,9 @@ namespace HRworksConnector.Actions
         /// Lists the holidays for the company and its permanent establishments for the specified year( and country).
         /// </summary>
         /// <param name="year"></param>
-        /// <returns></returns>
+        /// <returns>A collection of holiday objects in JSON format, sorted by country codes and categorized into
+        /// general holidays(for the whole country), state holidays(for specific regions or states) and
+        /// permanent establishment holidays(that only affect certain permanent establishments of the company).</returns>
         public async System.Threading.Tasks.Task<HRworksConnector.Models.GeneralActions.HolidaysResponse> GetHolidaysAsync(int year)
         {
             const string Target = @"GetHolidays";

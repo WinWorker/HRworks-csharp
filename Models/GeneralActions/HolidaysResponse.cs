@@ -9,7 +9,7 @@ namespace HRworksConnector.Models.GeneralActions
     [Newtonsoft.Json.JsonConverter(typeof(HolidaysConverter))]
     public partial class HolidaysResponse
     {
-        public System.Collections.Generic.IDictionary<string, Holidays>  Holidays { get; set; }
+        public System.Collections.Generic.IDictionary<string, Holidays> Holidays { get; set; }
 
         public HolidaysResponse()
         {
