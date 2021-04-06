@@ -6,13 +6,14 @@ Folgende Funktionen sind verfügbar:
 
 **General Actions**
 - GetAllOrganizationUnits
+- GetAvailableWorkingHours
+- GetHolidays
 - GetPresentPersonsOfOrganizationUnit
 - GetPersons
-- GetAvailableWorkingHours
 
 **Absence Actions**
-- GetAllAbsenceTypes
 - GetAbsences
+- GetAllAbsenceTypes
 
 **EmployeeActions**
 - GetPersonMasterData
