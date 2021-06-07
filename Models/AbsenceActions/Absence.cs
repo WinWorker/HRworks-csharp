@@ -8,6 +8,9 @@ namespace HRworksConnector.Models.AbsenceActions
 {
     public partial class Absence
     {
+        [Newtonsoft.Json.JsonProperty("number")]
+        public string Number { get; set; }
+
         [Newtonsoft.Json.JsonProperty("name")]
         public string Name { get; set; }
 
