@@ -17,3 +17,8 @@ Folgende Funktionen sind verfügbar:
 
 **EmployeeActions**
 - GetPersonMasterData
+
+## License
+
+Der Quellcode der Seite steht unter der MIT-Lizenz, die Sie in der Datei
+der Datei LICENSE.txt finden.
