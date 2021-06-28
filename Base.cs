@@ -124,6 +124,15 @@ namespace HRworksConnector
                 System.Console.WriteLine(ex.Message);
             }
 #endif
+            try
+            {
+                httpResponseMessage.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                System.Net.Http.HttpRequestException httpRequestException = new System.Net.Http.HttpRequestException(resultContent, ex);
+                throw httpRequestException;
+            }
 
             System.Threading.Tasks.Task<T> typedResponse = System.Threading.Tasks.Task.Factory.StartNew(() => Newtonsoft.Json.JsonConvert.DeserializeObject<T>(resultContent));
             return await typedResponse;
