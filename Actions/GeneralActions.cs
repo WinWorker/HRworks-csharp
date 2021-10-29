@@ -149,7 +149,7 @@ namespace HRworksConnector.Actions
         /// <returns>A collection of PermanentEstablishment objects.</returns>
         public async System.Threading.Tasks.Task<HRworksConnector.Models.GeneralActions.PermanentEstablishmentsResponse> GetAllPermanentEstablishmentsAsync()
         {
-            const string Target = @" GetAllPermanentEstablishments";
+            const string Target = @"GetAllPermanentEstablishments";
             return await PostAsync<HRworksConnector.Models.GeneralActions.PermanentEstablishmentsResponse>(Target, "");
         }
 
