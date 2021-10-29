@@ -42,6 +42,12 @@ namespace HRworksConnector
             {
                 HRworksConnector.HRworksApi hrworksApi = new HRworksConnector.HRworksApi(AccessKey, SecretAccessKey, RealmIdentifier);
 
+                #region GetAllPermanentEstablishments
+
+                HRworksConnector.Models.GeneralActions.PermanentEstablishmentsResponse permanentEstablishmentsResponse = await hrworksApi.GeneralActions.GetAllPermanentEstablishmentsAsync();
+
+                #endregion
+
                 #region Target GetHolidays
 
                 HRworksConnector.Models.GeneralActions.HolidaysResponse holidaysResponse = await hrworksApi.GeneralActions.GetHolidaysAsync(System.DateTime.Now.Year);
