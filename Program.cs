@@ -32,7 +32,7 @@ namespace HRworksConnector
             }
 
             System.Console.WriteLine();
-            System.Console.Write("Drücken Sie eine Teste um das Progamm zu beenden.");
+            System.Console.Write("Drücken Sie eine Taste, um das Progamm zu beenden.");
             System.Console.ReadKey();
         }
 
