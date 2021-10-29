@@ -47,6 +47,12 @@ namespace HRworksConnector.Actions
         /// </summary>
         /// <returns>A collection of (sub) date intervals for each person identifier that includes the cumulated working hours value for the respective date interval.</returns>
         System.Threading.Tasks.Task<HRworksConnector.Models.GeneralActions.GetAvailableWorkingHoursResponse> GetAvailableWorkingHoursAsync(HRworksConnector.Models.GeneralActions.GetAvailableWorkingHoursRequest getAvailableWorkingHoursRequest);
+
+        /// <summary>
+        /// Lists all permanent establishments of the company with ID/number and name. Only active permanent establishments will be returned.
+        /// </summary>
+        /// <returns>A collection of PermanentEstablishment objects.</returns>
+        System.Threading.Tasks.Task<HRworksConnector.Models.GeneralActions.PermanentEstablishmentsResponse> GetAllPermanentEstablishmentsAsync();
     }
 
     public class GenaralActions : HRworksConnector.Base, IGeneralActions
@@ -135,6 +141,16 @@ namespace HRworksConnector.Actions
             Newtonsoft.Json.Linq.JObject json = Newtonsoft.Json.Linq.JObject.FromObject(getAvailableWorkingHoursRequest);
 
             return await PostAsync<HRworksConnector.Models.GeneralActions.GetAvailableWorkingHoursResponse>(Target, json);
+        }
+
+        /// <summary>
+        /// Lists all permanent establishments of the company with ID/number and name. Only active permanent establishments will be returned.
+        /// </summary>
+        /// <returns>A collection of PermanentEstablishment objects.</returns>
+        public async System.Threading.Tasks.Task<HRworksConnector.Models.GeneralActions.PermanentEstablishmentsResponse> GetAllPermanentEstablishmentsAsync()
+        {
+            const string Target = @" GetAllPermanentEstablishments";
+            return await PostAsync<HRworksConnector.Models.GeneralActions.PermanentEstablishmentsResponse>(Target, "");
         }
 
         #endregion

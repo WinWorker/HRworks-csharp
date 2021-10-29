@@ -85,7 +85,9 @@
     <Compile Include="Models\GeneralActions\OrganizationUnit.cs" />
     <Compile Include="Models\GeneralActions\GetPersonsResponse.cs" />
     <Compile Include="Models\GeneralActions\OrganizationUnitsResponse.cs" />
+    <Compile Include="Models\GeneralActions\PermanentEstablishment.cs" />
     <Compile Include="Models\GeneralActions\PersonBaseData.cs" />
+    <Compile Include="Models\GeneralActions\PermanentEstablishmentsResponse.cs" />
     <Compile Include="Models\GeneralActions\PersonsOfOrganizationUnitResponse.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
