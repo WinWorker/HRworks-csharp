@@ -1,6 +1,6 @@
 # HRworks API
 
-C# Client für die HRworks API: [API von HRworks](https://www.hrworks.de/produkt/api/) / [Schnittstellenbeschreibung](https://developers.hrworks.de/).
+C# Client für die HRworks API: [API von HRworks](https://www.hrworks.de/produkt/api/) / [Schnittstellenbeschreibung (V1)](https://developers.hrworks.de/1.0/).
 
 Folgende Funktionen sind verfügbar:
 
