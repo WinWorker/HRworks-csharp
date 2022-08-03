@@ -17,7 +17,7 @@ namespace HRworksConnector.Models.AbsenceActions
         }
     }
 
-    public class PersonAbsences
+    public partial class PersonAbsences
     {
         public string Username { get; set; }
 
@@ -26,6 +26,14 @@ namespace HRworksConnector.Models.AbsenceActions
         public PersonAbsences()
         {
             this.Absences = new System.Collections.Generic.List<HRworksConnector.Models.AbsenceActions.Absence>();
+        }
+    }
+
+    public partial class PersonAbsences
+    {
+        public override string ToString()
+        {
+            return string.Format("{0} - {1} Abwesenheitsbuchungen", this.Username, this.Absences.Count);
         }
     }
 
