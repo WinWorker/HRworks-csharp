@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace HRworksConnector
 {
@@ -24,10 +26,7 @@ namespace HRworksConnector
 
         public const string Host = "api.hrworks.de";
 
-        private const string HeaderXHRworksDate = "x-hrworks-date";
-        private const string HeaderXHRworksTarget = "x-hrworks-target";
-        private const string ClosingString = "hrworks_api_request";
-        private const string SignatureAlgorithmIdentifier = "HRWORKS-HMAC-SHA256";
+        private const string AuthenticationUrl = @"/v2/authentication";
 
         #endregion
 
@@ -35,7 +34,10 @@ namespace HRworksConnector
 
         private string accessKey = string.Empty;
         private string secretAccessKey = string.Empty;
-        private string realmIdentifier = string.Empty;
+
+        private string accessToken = string.Empty;
+        private System.DateTime accessTokenCreated = System.DateTime.MinValue;
+        private System.TimeSpan accessTokenTimeToLive = System.TimeSpan.FromMinutes(5);
 
         #endregion
 
@@ -57,23 +59,14 @@ namespace HRworksConnector
             }
         }
 
-        public string RealmIdentifier
-        {
-            get
-            {
-                return this.realmIdentifier;
-            }
-        }
-
         #endregion
 
         #region Constructor
 
-        public Base(string accessKey, string secretAccessKey, string realmIdentifier)
+        public Base(string accessKey, string secretAccessKey)
         {
             this.accessKey = accessKey;
             this.secretAccessKey = secretAccessKey;
-            this.realmIdentifier = realmIdentifier;
         }
 
         #endregion
@@ -90,6 +83,16 @@ namespace HRworksConnector
             return await SendRequestAsync<T>(RequestMethod.Post, target, jsonBody);
         }
 
+        protected async System.Threading.Tasks.Task<T> GetAsync<T>(string target)
+        {
+            return await SendRequestAsync<T>(RequestMethod.Get, target, string.Empty);
+        }
+
+        protected async System.Threading.Tasks.Task<T> GetAsync<T>(string target, string queryString)
+        {
+            return await SendRequestAsync<T>(RequestMethod.Get, target, queryString);
+        }
+
         public async System.Threading.Tasks.Task<T> SendRequestAsync<T>(string requestMethod, string target, string jsonBody, int timeoutSeconds = 60)
         {
             System.Net.Http.HttpResponseMessage httpResponseMessage = await SendAsync(requestMethod, target, jsonBody, timeoutSeconds);
@@ -101,7 +104,7 @@ namespace HRworksConnector
             try
             {
                 string tempDirectory = System.IO.Path.GetTempPath();
-                string targetFilename = string.Format("hrworks-dbg-{0}.json", target);
+                string targetFilename = string.Format("hrworks-dbg-{0}.json", target.Replace("/", "_"));
                 string tempFilepath = System.IO.Path.Combine(tempDirectory, targetFilename);
 
                 string tmpContent = resultContent;
@@ -140,62 +143,70 @@ namespace HRworksConnector
 
         public async System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage> SendAsync(string requestMethod, string target, string jsonBody, int timeoutSeconds = 60)
         {
-            string requestDateSecret = "HRWORKS" + this.secretAccessKey;
             System.DateTime now = System.DateTime.Now;
 
-            string requestTimestampAsText = string.Format("{0:yyyyMMdd}T{0:HHmmss}Z", now.ToUniversalTime());
-            string requestDateAsText = string.Format("{0:yyyyMMdd}", now.ToUniversalTime());
+            if (string.IsNullOrEmpty(this.accessToken) ||
+                System.DateTime.Now.Subtract(this.accessTokenCreated) >= this.accessTokenTimeToLive)
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    TimeSpan timeout = TimeSpan.FromSeconds(timeoutSeconds);
 
-            // Creating the canonical request
-            string canonicalRequest = GetCanonicalRequest(Host, requestMethod, @"/", target, requestTimestampAsText, jsonBody);
+                    try
+                    {
+                        System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Ssl3 | System.Net.SecurityProtocolType.Tls | System.Net.SecurityProtocolType.Tls11 | System.Net.SecurityProtocolType.Tls12;
+                    }
+                    catch (Exception)
+                    {
+                    }
 
-            // Creating the string to sign
-            System.Text.StringBuilder stringSignatur = new System.Text.StringBuilder();
-            stringSignatur.Append(SignatureAlgorithmIdentifier);
-            stringSignatur.Append("\n");
-            stringSignatur.Append(requestTimestampAsText);
-            stringSignatur.Append("\n");
-            stringSignatur.Append(GetSha256Hash(canonicalRequest.ToString()));
+                    string authUrl = string.Format("https://{0}{1}", Host, AuthenticationUrl);
 
-            // Creating the string to sign
-            byte[] requestDateSign = GetHMACSHA256Hash(requestDateAsText, System.Text.Encoding.ASCII.GetBytes(requestDateSecret));
-            byte[] realmSign = GetHMACSHA256Hash(RealmIdentifier, requestDateSign);
-            byte[] closingSign = GetHMACSHA256Hash(ClosingString, realmSign);
+                    Newtonsoft.Json.Linq.JObject authAsJson = new Newtonsoft.Json.Linq.JObject();
+                    authAsJson["accessKey"] = this.accessKey;
+                    authAsJson["secretAccessKey"] = this.secretAccessKey;
+                    System.Net.Http.StringContent bodyAuth = new System.Net.Http.StringContent(authAsJson.ToString(), Encoding.UTF8, "application/json");
+                    System.Net.Http.HttpResponseMessage httpResponseMessageAuth = await httpClient.PostAsync(authUrl, bodyAuth);
 
-            byte[] stringSign = GetHMACSHA256Hash(stringSignatur.ToString(), closingSign);
+                    if (!httpResponseMessageAuth.IsSuccessStatusCode)
+                    {
+                        return httpResponseMessageAuth;
+                    }
 
-            string newSignature = GetHex(stringSign);
+                    System.Net.Http.HttpContent httpContentAuth = httpResponseMessageAuth.Content;
+                    string resultContent = httpContentAuth.ReadAsStringAsync().Result;
 
-            System.Text.StringBuilder credential = new System.Text.StringBuilder();
+                    Newtonsoft.Json.Linq.JObject tokenAsJson = Newtonsoft.Json.Linq.JObject.Parse(resultContent);
+                    this.accessToken = tokenAsJson.GetValue("token", StringComparison.InvariantCultureIgnoreCase).ToString();
+                    this.accessTokenCreated = now;
+                }
+            }
 
-            credential.AppendFormat("Credential={0}/{1}, ", System.Net.WebUtility.UrlEncode(AccessKey), RealmIdentifier);
-            credential.Append("SignedHeaders=content-type;host;x-hrworks-date;x-hrworks-target, ");
-            credential.AppendFormat("Signature={0}", newSignature);
+            if (string.IsNullOrEmpty(this.accessToken))
+            {
+                System.Net.Http.HttpResponseMessage httpResponseMessageNoApiKey = new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.Unauthorized);
+                httpResponseMessageNoApiKey.ReasonPhrase = "No Token created.";
+
+                Newtonsoft.Json.Linq.JObject errorAsJson = new Newtonsoft.Json.Linq.JObject();
+                errorAsJson["message"] = httpResponseMessageNoApiKey.ReasonPhrase;
+                httpResponseMessageNoApiKey.Content = new System.Net.Http.StringContent(errorAsJson.ToString(Newtonsoft.Json.Formatting.None));
+                httpResponseMessageNoApiKey.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+                return httpResponseMessageNoApiKey;
+            }
 
             using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
             {
                 TimeSpan timeout = TimeSpan.FromSeconds(timeoutSeconds);
 
-                try
-                {
-                    System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Ssl3 | System.Net.SecurityProtocolType.Tls | System.Net.SecurityProtocolType.Tls11 | System.Net.SecurityProtocolType.Tls12;
-                }
-                catch (Exception)
-                {
-                }
-
-                string url = string.Format("https://{0}", Host);
+                string url = string.Format("https://{0}{1}", Host, target);
 
                 httpClient.BaseAddress = new Uri(url);
                 httpClient.DefaultRequestHeaders.Accept.Clear();
                 httpClient.Timeout = timeout;
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", this.accessToken);
                 httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
                 httpClient.DefaultRequestHeaders.Date = new System.DateTimeOffset(now);
-                httpClient.DefaultRequestHeaders.Add(HeaderXHRworksDate, requestTimestampAsText);
-                httpClient.DefaultRequestHeaders.Add(HeaderXHRworksTarget, target);
-
-                System.Net.Http.Headers.AuthenticationHeaderValue authenticationHeaderValue = new System.Net.Http.Headers.AuthenticationHeaderValue(SignatureAlgorithmIdentifier, credential.ToString());
-                httpClient.DefaultRequestHeaders.Authorization = authenticationHeaderValue;
 
                 System.Net.Http.StringContent body = new System.Net.Http.StringContent(jsonBody, Encoding.UTF8, "application/json");
 
@@ -210,7 +221,21 @@ namespace HRworksConnector
                         httpResponseMessage = await httpClient.PutAsync(url, body);
                         break;
                     case RequestMethod.Get:
-                        httpResponseMessage = await httpClient.GetAsync(url);
+
+                        if (string.IsNullOrEmpty(jsonBody))
+                        {
+                            httpResponseMessage = await httpClient.GetAsync(url);
+                        }
+                        else
+                        {
+                            if (!jsonBody.StartsWith("?"))
+                            {
+                                jsonBody = "?" + jsonBody;
+                            }
+
+                            httpResponseMessage = await httpClient.GetAsync(url + jsonBody);
+                        }
+
                         break;
                     case RequestMethod.Delete:
                         httpResponseMessage = await httpClient.DeleteAsync(url);
@@ -224,68 +249,6 @@ namespace HRworksConnector
         #endregion
 
         #region Private Methods
-
-        private static string GetCanonicalRequest(string host, string requestMethod, string uri, string target, string requestTimestamp, string body)
-        {
-            System.Text.StringBuilder canonicalRequest = new System.Text.StringBuilder();
-
-            canonicalRequest.Append(requestMethod);
-            canonicalRequest.Append("\n");
-
-            canonicalRequest.Append(uri);
-            canonicalRequest.Append("\n");
-            canonicalRequest.Append("\n");
-
-            canonicalRequest.Append("content-type:application/json; charset=utf-8");
-            canonicalRequest.Append("\n");
-
-            canonicalRequest.Append(string.Format("host:{0}", host));
-            canonicalRequest.Append("\n");
-
-            canonicalRequest.AppendFormat("{0}:{1}", HeaderXHRworksDate, requestTimestamp);
-            canonicalRequest.Append("\n");
-
-            canonicalRequest.AppendFormat("{0}:{1}", HeaderXHRworksTarget, target);
-            canonicalRequest.Append("\n");
-            canonicalRequest.Append("\n");
-
-            canonicalRequest.Append(GetSha256Hash(body));
-
-            return canonicalRequest.ToString();
-        }
-
-        private static byte[] GetHMACSHA256Hash(string plainText, byte[] secret)
-        {
-            byte[] tmpSignatur = null;
-
-            using (System.Security.Cryptography.HMACSHA256 hmac = new System.Security.Cryptography.HMACSHA256(secret))
-            {
-                tmpSignatur = hmac.ComputeHash(System.Text.Encoding.ASCII.GetBytes(plainText));
-            }
-
-            return tmpSignatur;
-        }
-
-        private static string GetSha256Hash(string data)
-        {
-            using (System.Security.Cryptography.SHA256 sha256Hash = System.Security.Cryptography.SHA256.Create())
-            {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(data));
-                return GetHex(bytes);
-            }
-        }
-
-        private static string GetHex(byte[] data)
-        {
-            StringBuilder builder = new StringBuilder();
-
-            for (int i = 0; i < data.Length; i++)
-            {
-                builder.Append(data[i].ToString("x2"));
-            }
-
-            return builder.ToString();
-        }
 
         #endregion
     }

@@ -8,9 +8,9 @@ namespace HRworksConnector
 {
     public interface IHRworksApi
     {
-        HRworksConnector.Actions.IGeneralActions GeneralActions { get; }
-        HRworksConnector.Actions.IAbsenceActions AbsenceActions { get; }
-        HRworksConnector.Actions.IEmployeeActions EmployeeActions { get; }
+        HRworksConnector.Endpoints.IGeneralEndpoints GeneralEndpoints { get; }
+        HRworksConnector.Endpoints.IAbsenceEndpoints AbsenceEndpoints { get; }
+        HRworksConnector.Endpoints.IPersonEndpoints PersonEndpoints { get; }
     }
 
     public class HRworksApi : IHRworksApi
@@ -19,32 +19,30 @@ namespace HRworksConnector
 
         private string accessKey = string.Empty;
         private string secretAccessKey = string.Empty;
-        private string realmIdentifier = string.Empty;
 
         #endregion
 
         #region Constructor
 
-        public HRworksApi(string accessKey, string secretAccessKey, string realmIdentifier)
+        public HRworksApi(string accessKey, string secretAccessKey)
         {
             this.accessKey = accessKey;
             this.secretAccessKey = secretAccessKey;
-            this.realmIdentifier = realmIdentifier;
 
-            this.GeneralActions = new HRworksConnector.Actions.GenaralActions(this.accessKey, this.secretAccessKey, this.realmIdentifier);
-            this.AbsenceActions = new HRworksConnector.Actions.AbsenceActions(this.accessKey, this.secretAccessKey, this.realmIdentifier);
-            this.EmployeeActions = new HRworksConnector.Actions.EmployeeActions(this.accessKey, this.secretAccessKey, this.realmIdentifier);
+            this.GeneralEndpoints = new HRworksConnector.Endpoints.GenaralEndpoints(this.accessKey, this.secretAccessKey);
+            this.AbsenceEndpoints = new HRworksConnector.Endpoints.AbsenceEndpoints(this.accessKey, this.secretAccessKey);
+            this.PersonEndpoints = new HRworksConnector.Endpoints.PersonEndpoints(this.accessKey, this.secretAccessKey);
         }
 
         #endregion
 
         #region Properties
 
-        public HRworksConnector.Actions.IGeneralActions GeneralActions { get; }
+        public HRworksConnector.Endpoints.IGeneralEndpoints GeneralEndpoints { get; }
 
-        public HRworksConnector.Actions.IAbsenceActions AbsenceActions { get; }
+        public HRworksConnector.Endpoints.IAbsenceEndpoints AbsenceEndpoints { get; }
 
-        public HRworksConnector.Actions.IEmployeeActions EmployeeActions { get; }
+        public HRworksConnector.Endpoints.IPersonEndpoints PersonEndpoints { get; }
 
         #endregion
 
