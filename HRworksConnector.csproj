@@ -8,10 +8,11 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>HRworksConnector</RootNamespace>
     <AssemblyName>HRworksConnector</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -97,6 +98,17 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Converter\Converter.cs" />
+    <Compile Include="Utils\JWTDecoder\Algorithms\AlgorithmFactory.cs" />
+    <Compile Include="Utils\JWTDecoder\Algorithms\HMACSHA256Algorithm.cs" />
+    <Compile Include="Utils\JWTDecoder\Algorithms\HMACSHA384Algorithm.cs" />
+    <Compile Include="Utils\JWTDecoder\Algorithms\HMACSHA512Algorithm.cs" />
+    <Compile Include="Utils\JWTDecoder\Algorithms\IAlgorithmFactory.cs" />
+    <Compile Include="Utils\JWTDecoder\Algorithms\IJwtAlgorithm.cs" />
+    <Compile Include="Utils\JWTDecoder\HashAlgorithm.cs" />
+    <Compile Include="Utils\JWTDecoder\Helpers\DateTimeHelpers.cs" />
+    <Compile Include="Utils\JWTDecoder\Helpers\EncodingHelper.cs" />
+    <Compile Include="Utils\JWTDecoder\JWTDecoder.cs" />
+    <Compile Include="Utils\JWTDecoder\JwtHeader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace HRworksConnector
 {
@@ -32,12 +31,24 @@ namespace HRworksConnector
 
         #region Privates
 
+        private static volatile System.Lazy<LoginHelper> lazyLoginHelper = new System.Lazy<LoginHelper>(delegate
+        {
+            return new LoginHelper();
+        });
+
+        /// <summary>
+        /// Threadsicheres Singleton
+        /// </summary>
+        private static LoginHelper Login
+        {
+            get
+            {
+                return lazyLoginHelper.Value;
+            }
+        }
+
         private string accessKey = string.Empty;
         private string secretAccessKey = string.Empty;
-
-        private string accessToken = string.Empty;
-        private System.DateTime accessTokenCreated = System.DateTime.MinValue;
-        private System.TimeSpan accessTokenTimeToLive = System.TimeSpan.FromMinutes(5);
 
         #endregion
 
@@ -145,44 +156,9 @@ namespace HRworksConnector
         {
             System.DateTime now = System.DateTime.Now;
 
-            if (string.IsNullOrEmpty(this.accessToken) ||
-                System.DateTime.Now.Subtract(this.accessTokenCreated) >= this.accessTokenTimeToLive)
-            {
-                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
-                {
-                    TimeSpan timeout = TimeSpan.FromSeconds(timeoutSeconds);
+            await this.ReNewTokenIfNecessary(timeoutSeconds);
 
-                    try
-                    {
-                        System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Ssl3 | System.Net.SecurityProtocolType.Tls | System.Net.SecurityProtocolType.Tls11 | System.Net.SecurityProtocolType.Tls12;
-                    }
-                    catch (Exception)
-                    {
-                    }
-
-                    string authUrl = string.Format("https://{0}{1}", Host, AuthenticationUrl);
-
-                    Newtonsoft.Json.Linq.JObject authAsJson = new Newtonsoft.Json.Linq.JObject();
-                    authAsJson["accessKey"] = this.accessKey;
-                    authAsJson["secretAccessKey"] = this.secretAccessKey;
-                    System.Net.Http.StringContent bodyAuth = new System.Net.Http.StringContent(authAsJson.ToString(), Encoding.UTF8, "application/json");
-                    System.Net.Http.HttpResponseMessage httpResponseMessageAuth = await httpClient.PostAsync(authUrl, bodyAuth);
-
-                    if (!httpResponseMessageAuth.IsSuccessStatusCode)
-                    {
-                        return httpResponseMessageAuth;
-                    }
-
-                    System.Net.Http.HttpContent httpContentAuth = httpResponseMessageAuth.Content;
-                    string resultContent = httpContentAuth.ReadAsStringAsync().Result;
-
-                    Newtonsoft.Json.Linq.JObject tokenAsJson = Newtonsoft.Json.Linq.JObject.Parse(resultContent);
-                    this.accessToken = tokenAsJson.GetValue("token", StringComparison.InvariantCultureIgnoreCase).ToString();
-                    this.accessTokenCreated = now;
-                }
-            }
-
-            if (string.IsNullOrEmpty(this.accessToken))
+            if (string.IsNullOrEmpty(Login.AccessToken))
             {
                 System.Net.Http.HttpResponseMessage httpResponseMessageNoApiKey = new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.Unauthorized);
                 httpResponseMessageNoApiKey.ReasonPhrase = "No Token created.";
@@ -204,7 +180,7 @@ namespace HRworksConnector
                 httpClient.BaseAddress = new Uri(url);
                 httpClient.DefaultRequestHeaders.Accept.Clear();
                 httpClient.Timeout = timeout;
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", this.accessToken);
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Login.AccessToken);
                 httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
                 httpClient.DefaultRequestHeaders.Date = new System.DateTimeOffset(now);
 
@@ -249,6 +225,114 @@ namespace HRworksConnector
         #endregion
 
         #region Private Methods
+
+        private async System.Threading.Tasks.Task ReNewTokenIfNecessary(int timeoutSeconds = 60)
+        {
+            if (string.IsNullOrEmpty(Login.AccessToken) ||
+                System.DateTime.Now.Subtract(Login.AccessTokenExpire).TotalSeconds >= 0)
+            {
+                using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
+                {
+                    TimeSpan timeout = TimeSpan.FromSeconds(timeoutSeconds);
+
+                    try
+                    {
+                        System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Ssl3 | System.Net.SecurityProtocolType.Tls | System.Net.SecurityProtocolType.Tls11 | System.Net.SecurityProtocolType.Tls12;
+                    }
+                    catch (Exception)
+                    {
+                    }
+
+                    string authUrl = string.Format("https://{0}{1}", Host, AuthenticationUrl);
+
+                    Newtonsoft.Json.Linq.JObject authAsJson = new Newtonsoft.Json.Linq.JObject();
+                    authAsJson["accessKey"] = this.accessKey;
+                    authAsJson["secretAccessKey"] = this.secretAccessKey;
+                    System.Net.Http.StringContent bodyAuth = new System.Net.Http.StringContent(authAsJson.ToString(), Encoding.UTF8, "application/json");
+                    System.Net.Http.HttpResponseMessage httpResponseMessageAuth = await httpClient.PostAsync(authUrl, bodyAuth);
+
+                    httpResponseMessageAuth.EnsureSuccessStatusCode();
+
+                    System.Net.Http.HttpContent httpContentAuth = httpResponseMessageAuth.Content;
+                    string resultContent = httpContentAuth.ReadAsStringAsync().Result;
+
+                    Newtonsoft.Json.Linq.JObject tokenAsJson = Newtonsoft.Json.Linq.JObject.Parse(resultContent);
+                    string tmpAccessToken = tokenAsJson.GetValue("token", StringComparison.InvariantCultureIgnoreCase).ToString();
+                    Login.LoadFromJwt(tmpAccessToken);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Private Classes
+
+        private class LoginHelper
+        {
+            private string accessToken = string.Empty;
+            private System.DateTime accessTokenExpire = System.DateTime.MinValue;
+            private readonly System.TimeSpan DefaultAccessTokenTimeToLive = System.TimeSpan.FromMinutes(5);
+
+            public string AccessToken
+            {
+                get
+                {
+                    return this.accessToken;
+                }
+            }
+
+            public System.DateTime AccessTokenExpire
+            {
+                get
+                {
+                    return this.accessTokenExpire;
+                }
+            }
+
+            public void LoadFromJwt(string jwt)
+            {
+                if (string.IsNullOrEmpty(jwt))
+                {
+                    return;
+                }
+
+                System.DateTime now = System.DateTime.Now;
+                this.accessToken = jwt;
+                this.accessTokenExpire = now.Add(DefaultAccessTokenTimeToLive);
+
+                try
+                {
+                    // JWT decodieren
+                    (JWTDecoder.JwtHeader Header, string Payload, string Verification) decodedToken = JWTDecoder.Decoder.DecodeToken(jwt);
+
+                    if (!string.IsNullOrEmpty(decodedToken.Payload))
+                    {
+                        Newtonsoft.Json.Linq.JObject payloadAsJson = Newtonsoft.Json.Linq.JObject.Parse(decodedToken.Payload);
+                        Newtonsoft.Json.Linq.JToken expireDateTimeAsJson = payloadAsJson.GetValue("exp", System.StringComparison.InvariantCultureIgnoreCase);
+
+                        if (expireDateTimeAsJson != null)
+                        {
+                            long expireInSeconds = 0;
+                            if (long.TryParse(expireDateTimeAsJson.ToString(), out expireInSeconds))
+                            {
+                                DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(expireInSeconds);
+
+                                // wenn das "Verfallsdatum" größer als Now ist, dann merken.
+                                if (dateTimeOffset.LocalDateTime.CompareTo(now) > 0)
+                                {
+                                    this.accessTokenExpire = dateTimeOffset.LocalDateTime;
+                                    System.Console.WriteLine(string.Format("JWT expiration time: {0:dd.MM.yyyy HH:mm.ss}", this.accessTokenExpire));
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine(ex.Message);
+                }
+            }
+        }
 
         #endregion
     }
