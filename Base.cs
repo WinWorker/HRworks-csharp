@@ -229,7 +229,7 @@ namespace HRworksConnector
         private async System.Threading.Tasks.Task ReNewTokenIfNecessary(int timeoutSeconds = 60)
         {
             if (string.IsNullOrEmpty(Login.AccessToken) ||
-                System.DateTime.Now.Subtract(Login.AccessTokenExpire).TotalSeconds >= 0)
+                System.DateTime.Now.Add(System.TimeSpan.FromSeconds(60)).Subtract(Login.AccessTokenExpire).TotalSeconds >= 0)
             {
                 using (System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient())
                 {
