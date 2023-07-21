@@ -8,10 +8,11 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>HRworksConnector</RootNamespace>
     <AssemblyName>HRworksConnector</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -57,41 +58,57 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\AbsenceActions.cs" />
-    <Compile Include="Actions\EmployeeActions.cs" />
+    <Compile Include="Endpoints\AbsenceEndpoints.cs" />
     <Compile Include="Base.cs" />
-    <Compile Include="Actions\GeneralActions.cs" />
+    <Compile Include="Endpoints\GeneralEndpoints.cs" />
+    <Compile Include="Endpoints\PersonEndpoints.cs" />
     <Compile Include="HRworksApi.cs" />
-    <Compile Include="Models\AbsenceActions\Absence.cs" />
-    <Compile Include="Models\AbsenceActions\AbsenceType.cs" />
-    <Compile Include="Models\AbsenceActions\GetAbsencesResponse.cs" />
-    <Compile Include="Models\AbsenceActions\GetAbsencesRequest.cs" />
-    <Compile Include="Models\AbsenceActions\GetAllAbsenceTypesResponse.cs" />
-    <Compile Include="Models\EmployeeActions\Address.cs" />
-    <Compile Include="Models\EmployeeActions\BankAccount.cs" />
-    <Compile Include="Models\EmployeeActions\Cost.cs" />
-    <Compile Include="Models\EmployeeActions\GetPersonMasterDataRequest.cs" />
-    <Compile Include="Models\EmployeeActions\GetPersonMasterDataResponse.cs" />
-    <Compile Include="Models\EmployeeActions\PermanentEstablishment.cs" />
-    <Compile Include="Models\EmployeeActions\Person.cs" />
-    <Compile Include="Models\EmployeeActions\Superior.cs" />
-    <Compile Include="Models\EmployeeActions\WorkingDay.cs" />
-    <Compile Include="Models\EmployeeActions\WorkSchedule.cs" />
-    <Compile Include="Models\GeneralActions\GetAvailableWorkingHoursRequest.cs" />
-    <Compile Include="Models\GeneralActions\GetAvailableWorkingHoursResponse.cs" />
-    <Compile Include="Models\GeneralActions\Holiday.cs" />
-    <Compile Include="Models\GeneralActions\HolidaysResponse.cs" />
-    <Compile Include="Models\GeneralActions\Holidays.cs" />
-    <Compile Include="Models\GeneralActions\OrganizationUnit.cs" />
-    <Compile Include="Models\GeneralActions\GetPersonsResponse.cs" />
-    <Compile Include="Models\GeneralActions\OrganizationUnitsResponse.cs" />
-    <Compile Include="Models\GeneralActions\PermanentEstablishment.cs" />
-    <Compile Include="Models\GeneralActions\PersonBaseData.cs" />
-    <Compile Include="Models\GeneralActions\PermanentEstablishmentsResponse.cs" />
-    <Compile Include="Models\GeneralActions\PersonsOfOrganizationUnitResponse.cs" />
+    <Compile Include="Models\AbsenceEndpoints\AbsenceBase.cs" />
+    <Compile Include="Models\AbsenceEndpoints\GetSickLeavesRequest.cs" />
+    <Compile Include="Models\AbsenceEndpoints\AbsenceBaseType.cs" />
+    <Compile Include="Models\AbsenceEndpoints\GetSickLeavesResponse.cs" />
+    <Compile Include="Models\AbsenceEndpoints\SickLeaveType.cs" />
+    <Compile Include="Models\AbsenceEndpoints\AbsenceType.cs" />
+    <Compile Include="Models\AbsenceEndpoints\GetAbsencesResponse.cs" />
+    <Compile Include="Models\AbsenceEndpoints\GetAbsencesRequest.cs" />
+    <Compile Include="Models\AbsenceEndpoints\GetSickLeaveTypesResponse.cs" />
+    <Compile Include="Models\AbsenceEndpoints\GetAllAbsenceTypesResponse.cs" />
+    <Compile Include="Models\PersonEndpoints\Address.cs" />
+    <Compile Include="Models\PersonEndpoints\BankAccount.cs" />
+    <Compile Include="Models\PersonEndpoints\Cost.cs" />
+    <Compile Include="Models\PersonEndpoints\GetPersonMasterDataRequest.cs" />
+    <Compile Include="Models\PersonEndpoints\GetPersonMasterDataResponse.cs" />
+    <Compile Include="Models\PersonEndpoints\PermanentEstablishment.cs" />
+    <Compile Include="Models\PersonEndpoints\Person.cs" />
+    <Compile Include="Models\PersonEndpoints\Superior.cs" />
+    <Compile Include="Models\PersonEndpoints\WorkingDay.cs" />
+    <Compile Include="Models\PersonEndpoints\WorkSchedule.cs" />
+    <Compile Include="Models\PersonEndpoints\GetAvailableWorkingHoursRequest.cs" />
+    <Compile Include="Models\PersonEndpoints\GetAvailableWorkingHoursResponse.cs" />
+    <Compile Include="Models\GeneralEndpoints\Holiday.cs" />
+    <Compile Include="Models\GeneralEndpoints\HolidaysResponse.cs" />
+    <Compile Include="Models\GeneralEndpoints\Holidays.cs" />
+    <Compile Include="Models\GeneralEndpoints\OrganizationUnit.cs" />
+    <Compile Include="Models\PersonEndpoints\GetPersonsResponse.cs" />
+    <Compile Include="Models\GeneralEndpoints\OrganizationUnitsResponse.cs" />
+    <Compile Include="Models\GeneralEndpoints\PermanentEstablishment.cs" />
+    <Compile Include="Models\PersonEndpoints\PersonBaseData.cs" />
+    <Compile Include="Models\GeneralEndpoints\PermanentEstablishmentsResponse.cs" />
+    <Compile Include="Models\GeneralEndpoints\PersonsOfOrganizationUnitResponse.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Converter\Converter.cs" />
+    <Compile Include="Utils\JWTDecoder\Algorithms\AlgorithmFactory.cs" />
+    <Compile Include="Utils\JWTDecoder\Algorithms\HMACSHA256Algorithm.cs" />
+    <Compile Include="Utils\JWTDecoder\Algorithms\HMACSHA384Algorithm.cs" />
+    <Compile Include="Utils\JWTDecoder\Algorithms\HMACSHA512Algorithm.cs" />
+    <Compile Include="Utils\JWTDecoder\Algorithms\IAlgorithmFactory.cs" />
+    <Compile Include="Utils\JWTDecoder\Algorithms\IJwtAlgorithm.cs" />
+    <Compile Include="Utils\JWTDecoder\HashAlgorithm.cs" />
+    <Compile Include="Utils\JWTDecoder\Helpers\DateTimeHelpers.cs" />
+    <Compile Include="Utils\JWTDecoder\Helpers\EncodingHelper.cs" />
+    <Compile Include="Utils\JWTDecoder\JWTDecoder.cs" />
+    <Compile Include="Utils\JWTDecoder\JwtHeader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
